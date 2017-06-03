@@ -1,7 +1,7 @@
 {
   "name": "nwixtoolset",
   "version": "0.9.0",
-  "description": "Node module wrapper around the WIX Toolset binaries.",
+  "description": "Node module wrapper around the WIX Toolset executables.",
   "author": "Touchify (dev@touchify.co)",
   "license": "MIT",
   "main": "index.js",
