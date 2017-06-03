@@ -10,7 +10,7 @@
 [T|t]emp/
 [D|d]ist/
 [O|o]bj/
-sfx-bin/
+wix-bin/
 
 # Development files
 *.js.map
