@@ -36,6 +36,9 @@ export function addArgument(args: string[], arg: string, value: ArgumentTypes): 
     else if (valueType === "number") {
         args.push(arg, (<number>value).toString());
     }
+    else if (Array.isArray(value)) {
+        value.forEach(val => addArgument(args, arg, val));
+    }
     else if (valueType === "object") {
         Object.keys(value as object).forEach(key => {
             let valueArg = arg + key,
@@ -50,9 +53,6 @@ export function addArgument(args: string[], arg: string, value: ArgumentTypes): 
 
             addArgument(args, valueArg, true);
         });
-    }
-    else if (Array.isArray(value)) {
-        value.forEach(val => addArgument(args, arg, val));
     }
 }
 
