@@ -102,7 +102,7 @@ export interface HeatOptions extends CommonWIXOptions {
     generate?: "components" | "container" | "payloadgroup" | "layout" | "packagegroup";
 
     /** Generate guids now. */
-    generateGuidsNow?: string;
+    generateGuidsNow?: boolean;
     
     /** Indentation multiple (overrides default of 4). */
     indent?: number;
