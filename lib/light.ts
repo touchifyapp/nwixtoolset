@@ -42,7 +42,7 @@ export async function light(src: string | string[], options: LightOptions = {}):
     addArgument(args, "-d", options.define);
     
     addArgument(args, "-dut", options.dropUnrealTables);
-    addArgument(args, "-loc", options.loc);
+    await addPathArgument(args, "-loc", options.loc);
     addArgument(args, "-notidy", options.notidy);
     addArgument(args, "-pedantic", options.pedantic);
 
@@ -72,6 +72,7 @@ async function addBinderArguments(args: string[], options: LightBinderOptions): 
     addArgument(args, "-bcgg", options.backCompatibleGuids);
     await addPathArgument(args, "-cc", options.cacheCabs);
     addArgument(args, "-ct", options.numberOfThreads);
+    await addPathArgument(args, "-cub", options.cub);
     addArgument(args, "-cub", options.cub);
     addMapArgument(args, "-dcl", options.defaultCabLevel);
     addArgument(args, "-eav", options.exactAssemblyVersions);
