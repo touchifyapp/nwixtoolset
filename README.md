@@ -7,6 +7,31 @@
 `nwixtoolset` works as a wrapper around the [Windows Installer XML Toolset](http://wixtoolset.org).
 It abstracts the executables' switches with JS object abstraction.
 
+### Prerequistes
+
+#### Windows
+
+`.NET Framework 4+` should be installed.
+
+#### Linux and Mac OS X
+
+First install `wine` and `winetricks`:
+```shell
+# Linux
+$ apt-get install wine winetricks
+
+# Mac OS X
+$ brew install wine --without-x11
+$ brew install winetricks
+```
+
+Then, configure `wine` for WIX:
+```shell
+$ export WINEARCH=win32
+$ wineboot
+$ winetricks --unattended dotnet40 corefonts
+```
+
 ### Installation
 
 `nwixtoolset` can be installed using NPM:
