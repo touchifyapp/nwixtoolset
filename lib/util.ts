@@ -36,7 +36,7 @@ export function addArgument(args: string[], arg: string, value: ArgumentTypes): 
     else if (valueType === "number") {
         args.push(arg, (<number>value).toString());
     }
-    else if (Array.isArray(value)) {
+    else if (Array.isArray(value) && value.length > 0) {
         value.forEach(val => addArgument(args, arg, val));
     }
     else if (valueType === "object") {
@@ -61,7 +61,7 @@ export function addFixedArgument(args: string[], arg: string, value: undefined |
         return;
     }
 
-    if (Array.isArray(value)) {
+    if (Array.isArray(value) && value.length > 0) {
         value.forEach(val => addFixedArgument(args, arg, val));
     }
     else if (typeof value === "boolean") {
@@ -86,50 +86,17 @@ export function addMapArgument(args: string[], arg: string, value: undefined | s
 }
 
 export async function addPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
-    if (undef(value)) {
-        return;
-    }
-
-    if (!Array.isArray(value)) {
-        value = [value];
-    }
-
-    if (isWineEnv()) {
-        value = await winepath(...value);
-    }
-
+    value = await ensurePaths(value);
     return addArgument(args, arg, value);
 }
 
 export async function addFixedPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
-    if (undef(value)) {
-        return;
-    }
-
-    if (!Array.isArray(value)) {
-        value = [value];
-    }
-
-    if (isWineEnv()) {
-        value = await winepath(...value);
-    }
-
+    value = await ensurePaths(value);
     return addFixedArgument(args, arg, value);
 }
 
 export async function addPathFile(args: string[], file: undefined | string | string[]): Promise<void> {
-    if (undef(file)) {
-        return;
-    }
-
-    if (!Array.isArray(file)) {
-        file = [file];
-    }
-
-    if (isWineEnv()) {
-        file = await winepath(...file);
-    }
-
+    file = await ensurePaths(file);
     args.push(...file);
 }
 
@@ -138,6 +105,22 @@ export function addCommonArguments(args: string[], options: CommonWIXOptions): v
     addFixedArgument(args, "-sw", options.suppressWarning);
     addArgument(args, "-v", options.verbose);
     addFixedArgument(args, "-wx", options.warningAsError);
+}
+
+export async function ensurePaths(path?: string | string[]): Promise<string[]> {
+    if (undef(path)) {
+        return [];
+    }
+
+    if (!Array.isArray(path)) {
+        path = [path];
+    }
+
+    if (isWineEnv()) {
+        path = await winepath(...path);
+    }
+
+    return path;
 }
 
 export function winepath(...srcs: string[]): Promise<string[]> {

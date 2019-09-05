@@ -1,6 +1,7 @@
 export {
     CommonWIXOptions,
-    Dictionary
+    Dictionary,
+    ensurePaths
 } from "./lib/util";
 
 export * from "./lib/run";
