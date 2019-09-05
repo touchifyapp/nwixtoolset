@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const
-    downloadRelease = require("download-github-release").default,
+    downloadRelease = require("download-github-release"),
 
     GITHUB_USER = "wixtoolset",
     GITHUB_REPO = "wix3",

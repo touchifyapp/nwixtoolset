@@ -1,14 +1,14 @@
 import * as path from "path";
-import { spawn, SpawnOptions } from "child_process";
+import { spawn, SpawnOptions, StdioOptions } from "child_process";
 
-import { undef } from "./util";
+import { undef, isWineEnv } from "./util";
 
 /** Options for the inner spawn method. */
 export interface RunOptions {
     /** The current working directory to execute WIX exe binary on. */
     cwd?: string;
     /** The inner spawn stdio option. */
-    stdio?: string;
+    stdio?: StdioOptions;
 }
 
 /** Result of the wrapper. */
@@ -34,7 +34,7 @@ export type RunError = Error & RunResult & { command: string; args: string[] };
 export function run(exe: string, args: string[], options: RunOptions = {}): Promise<RunResult> {
     return new Promise<RunResult>((resolve, reject) => {
         let cmd = path.resolve(__dirname, "..", "wix-bin", `${exe}.exe`);
-        if (process.platform !== "win32") {
+        if (isWineEnv()) {
             args.unshift(cmd);
             cmd = "wine";
         }
@@ -47,8 +47,8 @@ export function run(exe: string, args: string[], options: RunOptions = {}): Prom
 
         let stdout = "", stderr = "";
         if (options.stdio !== "ignore" && options.stdio !== "inherit") {
-            child.stdout.on("data", data => { stdout += String(data); });
-            child.stderr.on("data", data => { stderr += String(data); });
+            child.stdout!.on("data", data => { stdout += String(data); });
+            child.stderr!.on("data", data => { stderr += String(data); });
         }
 
         child.on("error", reject);
@@ -76,40 +76,40 @@ export namespace raw {
 
     /** Raw wrapper for the dark.exe. */
     export const dark = run.bind(null, "dark") as RawMethod;
-    
+
     /** Raw wrapper for the heat.exe. */
     export const heat = run.bind(null, "heat") as RawMethod;
-    
+
     /** Raw wrapper for the insignia.exe. */
     export const insignia = run.bind(null, "insignia") as RawMethod;
-    
+
     /** Raw wrapper for the light.exe. */
     export const light = run.bind(null, "light") as RawMethod;
-    
+
     /** Raw wrapper for the lit.exe. */
     export const lit = run.bind(null, "lit") as RawMethod;
-    
+
     /** Raw wrapper for the lux.exe. */
     export const lux = run.bind(null, "lux") as RawMethod;
-    
+
     /** Raw wrapper for the melt.exe. */
     export const melt = run.bind(null, "melt") as RawMethod;
-    
+
     /** Raw wrapper for the nit.exe. */
     export const nit = run.bind(null, "nit") as RawMethod;
-    
+
     /** Raw wrapper for the pyro.exe. */
     export const pyro = run.bind(null, "pyro") as RawMethod;
-    
+
     /** Raw wrapper for the retina.exe. */
     export const retina = run.bind(null, "retina") as RawMethod;
-    
+
     /** Raw wrapper for the shine.exe. */
     export const shine = run.bind(null, "shine") as RawMethod;
-    
+
     /** Raw wrapper for the smoke.exe. */
     export const smoke = run.bind(null, "smoke") as RawMethod;
-    
+
     /** Raw wrapper for the torch.exe. */
     export const torch = run.bind(null, "torch") as RawMethod;
 

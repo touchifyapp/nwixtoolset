@@ -1,5 +1,5 @@
-import * as path from "path";
 import * as cp from "child_process";
+import * as isWSL from "is-wsl";
 
 import { RunOptions } from "./run";
 
@@ -10,7 +10,7 @@ export type ArgumentTypes = ArgumentsScalarTypes | Dictionary<ArgumentsScalarTyp
 export interface CommonWIXOptions extends RunOptions {
     /** Extension assembly or "class, assembly". */
     ext?: string | string[];
-    
+
     /** Suppress all warnings (true) or a specific message ID. */
     suppressWarning?: boolean | number | number[];
 
@@ -86,51 +86,51 @@ export function addMapArgument(args: string[], arg: string, value: undefined | s
 }
 
 export async function addPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
-     if (undef(value)) {
-         return;
-     }
+    if (undef(value)) {
+        return;
+    }
 
-     if (!Array.isArray(value)) {
-         value = [value];
-     }
+    if (!Array.isArray(value)) {
+        value = [value];
+    }
 
-     if (process.platform !== "win32") {
-         value = await winepath(...value);
-     }
-     
-     return addArgument(args, arg, value);
+    if (isWineEnv()) {
+        value = await winepath(...value);
+    }
+
+    return addArgument(args, arg, value);
 }
 
 export async function addFixedPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
     if (undef(value)) {
-         return;
-     }
+        return;
+    }
 
-     if (!Array.isArray(value)) {
-         value = [value];
-     }
+    if (!Array.isArray(value)) {
+        value = [value];
+    }
 
-     if (process.platform !== "win32") {
-         value = await winepath(...value);
-     }
-     
-     return addFixedArgument(args, arg, value);
+    if (isWineEnv()) {
+        value = await winepath(...value);
+    }
+
+    return addFixedArgument(args, arg, value);
 }
 
 export async function addPathFile(args: string[], file: undefined | string | string[]): Promise<void> {
     if (undef(file)) {
-         return;
-     }
+        return;
+    }
 
-     if (!Array.isArray(file)) {
-         file = [file];
-     }
+    if (!Array.isArray(file)) {
+        file = [file];
+    }
 
-     if (process.platform !== "win32") {
-         file = await winepath(...file);
-     }
-     
-     args.push(...file);
+    if (isWineEnv()) {
+        file = await winepath(...file);
+    }
+
+    args.push(...file);
 }
 
 export function addCommonArguments(args: string[], options: CommonWIXOptions): void {
@@ -144,10 +144,15 @@ export function winepath(...srcs: string[]): Promise<string[]> {
     return spawn("winepath", ["-w", ...srcs])
         .then(({ stdout }) => stdout.split(/\r?\n/g))
         .then(paths => paths.filter(p => !!p));
-} 
+}
 
 export function undef(val: any): val is undefined {
     return typeof val === "undefined";
+}
+
+export function isWineEnv() {
+    if ((<any>isWineEnv).result) return (<any>isWineEnv).result;
+    return ((<any>isWineEnv).result = process.platform !== "win32" && !isWSL);
 }
 
 export interface SpawnResult { stdout: string; stderr: string; }
@@ -156,8 +161,10 @@ export function spawn(command: string, args: string[], options: cp.SpawnOptions 
         const child = cp.spawn(command, args, options);
 
         let stdout = "", stderr = "";
-        child.stdout.on("data", data => { stdout += String(data); });
-        child.stderr.on("data", data => { stderr += String(data); });
+        if (options.stdio !== "ignore" && options.stdio !== "inherit") {
+            child.stdout!.on("data", data => { stdout += String(data); });
+            child.stderr!.on("data", data => { stderr += String(data); });
+        }
 
         child.on("error", reject);
         child.on("close", code => {
