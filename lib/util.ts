@@ -36,7 +36,7 @@ export function addArgument(args: string[], arg: string, value: ArgumentTypes): 
     else if (valueType === "number") {
         args.push(arg, (<number>value).toString());
     }
-    else if (Array.isArray(value) && value.length > 0) {
+    else if (Array.isArray(value)) {
         value.forEach(val => addArgument(args, arg, val));
     }
     else if (valueType === "object") {
@@ -61,7 +61,7 @@ export function addFixedArgument(args: string[], arg: string, value: undefined |
         return;
     }
 
-    if (Array.isArray(value) && value.length > 0) {
+    if (Array.isArray(value)) {
         value.forEach(val => addFixedArgument(args, arg, val));
     }
     else if (typeof value === "boolean") {
@@ -87,12 +87,12 @@ export function addMapArgument(args: string[], arg: string, value: undefined | s
 
 export async function addPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
     value = await ensurePaths(value);
-    return addArgument(args, arg, value);
+    addArgument(args, arg, value);
 }
 
 export async function addFixedPathArgument(args: string[], arg: string, value: undefined | string | string[]): Promise<void> {
     value = await ensurePaths(value);
-    return addFixedArgument(args, arg, value);
+    addFixedArgument(args, arg, value);
 }
 
 export async function addPathFile(args: string[], file: undefined | string | string[]): Promise<void> {

@@ -15,9 +15,9 @@
   "scripts": {
     "build": "tsc -p .",
     "test": "npm run build",
-    "prepublish": "npm run build",
     "prepare": "npm run build",
-    "postinstall": "node install.js"
+    "postinstall": "node install.js",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "download-github-release": "^0.3.2",
